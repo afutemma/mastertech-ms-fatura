@@ -1,0 +1,13 @@
+package com.mastertech.Fatura.client;
+
+import com.mastertech.Fatura.model.Cartao;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
+@FeignClient(name="cartao")
+public interface CartaoClient {
+
+    @GetMapping("v1/cartao/byId/{id}")
+    Cartao getCartaoPorId(@PathVariable int id);
+}
