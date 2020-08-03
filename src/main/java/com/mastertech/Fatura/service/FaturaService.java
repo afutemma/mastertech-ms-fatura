@@ -1,15 +1,19 @@
 package com.mastertech.Fatura.service;
 
 import com.mastertech.Fatura.client.CartaoClient;
-import com.mastertech.Fatura.client.ClienteClient;
+import com.mastertech.Fatura.client.PagamentoClient;
+import com.mastertech.Fatura.dto.ExpirarRequestDTO;
+import com.mastertech.Fatura.dto.ExpirarResponseDTO;
+import com.mastertech.Fatura.dto.PagarResponseDTO;
+import com.mastertech.Fatura.model.Cartao;
 import com.mastertech.Fatura.model.Fatura;
+import com.mastertech.Fatura.model.Pagamento;
 import com.mastertech.Fatura.repository.FaturaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.Calendar;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class FaturaService {
@@ -19,24 +23,49 @@ public class FaturaService {
     @Autowired
     private CartaoClient cartaoClient;
     @Autowired
-    private ClienteClient clienteClient;
+    private PagamentoClient pagamentoClient;
 
-    public Fatura buscaFatura(int clienteId, int cartaoId){
-        Fatura fatura = new Fatura();
-
-        return fatura;
+    public List<Pagamento> buscaFatura(int clienteId, int cartaoId){
+        Cartao cartao = cartaoClient.getCartaoPorCartaoCliente(cartaoId, clienteId);
+        return pagamentoClient.listarByNumero(cartaoId);
     }
 
-    public Fatura pagar(int clienteId, int cartaoId){
+    public PagarResponseDTO pagar(int clienteId, int cartaoId){
+        PagarResponseDTO pagarResponseDTO = new PagarResponseDTO();
         Fatura fatura = new Fatura();
+        Cartao cartao = cartaoClient.getCartaoPorCartaoCliente(cartaoId, clienteId);
+        List<Pagamento> pagamentos = pagamentoClient.listarByNumero(cartaoId);
+        double valorPago = 0;
 
-        return fatura;
+        for(Pagamento pg : pagamentos){
+            valorPago += pg.getValor();
+        }
+
+        int ok = pagamentoClient.pagar(cartaoId);
+
+        fatura.setIdCartao(cartaoId);
+        fatura.setPagoEm(Calendar.getInstance());
+        fatura.setValorPago(valorPago);
+        fatura = repository.save(fatura);
+
+        pagarResponseDTO.setId(fatura.getIdFatura());
+        pagarResponseDTO.setPagoEm(Calendar.getInstance());
+        pagarResponseDTO.setValorPago(valorPago);
+
+        return pagarResponseDTO;
     }
 
-    public Fatura expirar(int clienteId, int cartaoId){
-        Fatura fatura = new Fatura();
+    public ExpirarResponseDTO expirar(int clienteId, int cartaoId){
+        ExpirarResponseDTO expirarResponseDTO = new ExpirarResponseDTO();
+        ExpirarRequestDTO expirarRequestDTO = new ExpirarRequestDTO();
+        Cartao cartao = cartaoClient.getCartaoPorCartaoCliente(cartaoId, clienteId);
 
-        return fatura;
+        expirarRequestDTO.setAtivar(false);
+        expirarResponseDTO.setStatus("ok");
+
+        cartaoClient.setStatus(cartao.getNumero(), expirarRequestDTO);
+
+        return expirarResponseDTO;
     }
 
 }

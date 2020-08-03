@@ -1,6 +1,7 @@
 package com.mastertech.Fatura.model;
 
 import javax.persistence.*;
+import java.util.Calendar;
 
 @Entity
 @Table
@@ -10,8 +11,8 @@ public class Fatura {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int idFatura;
     private int idCartao;
-    private double valor;
-    private Enum<Status> status;
+    private Calendar pagoEm;
+    private double valorPago;
 
     public int getIdFatura() {
         return idFatura;
@@ -29,19 +30,19 @@ public class Fatura {
         this.idCartao = idCartao;
     }
 
-    public double getValor() {
-        return valor;
+    public Calendar getPagoEm() {
+        return pagoEm;
     }
 
-    public void setValor(double valor) {
-        this.valor = valor;
+    public void setPagoEm(Calendar pagoEm) {
+        this.pagoEm = pagoEm;
     }
 
-    public Enum<Status> getStatus() {
-        return status;
+    public double getValorPago() {
+        return valorPago;
     }
 
-    public void setStatus(Enum<Status> status) {
-        this.status = status;
+    public void setValorPago(double valorPago) {
+        this.valorPago = valorPago;
     }
 }

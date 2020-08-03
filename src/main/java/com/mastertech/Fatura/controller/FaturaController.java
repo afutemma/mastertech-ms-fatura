@@ -11,6 +11,12 @@ public class FaturaController {
     @Autowired
     private FaturaService service;
 
+
+    @GetMapping("/fatura/{clienteId}/{cartaoId}")
+    public ResponseEntity getFaturaPorClienteCartao(@PathVariable int clienteId, @PathVariable int cartaoId) {
+        return ResponseEntity.ok(service.buscaFatura(clienteId, cartaoId));
+    }
+
     @PostMapping("/fatura/{clienteId}/{cartaoId}/expirar")
     public ResponseEntity postExpirar(@PathVariable int clienteId, @PathVariable int cartaoId) {
         return ResponseEntity.ok(service.expirar(clienteId, cartaoId));
@@ -21,9 +27,4 @@ public class FaturaController {
         return ResponseEntity.ok(service.pagar(clienteId, cartaoId));
     }
 
-
-    @GetMapping("/fatura/{clienteId}/{cartaoId}")
-    public ResponseEntity getFaturaPorClienteCartao(@PathVariable int clienteId, @PathVariable int cartaoId) {
-        return ResponseEntity.ok(service.buscaFatura(clienteId, cartaoId));
-    }
 }
